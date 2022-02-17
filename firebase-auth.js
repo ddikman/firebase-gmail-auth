@@ -25,18 +25,19 @@ function logout() {
   firebase.auth().signOut();
 }
 
-function handleAuthError(error) {
-    if (error.code === "auth/unauthorized-domain") {
-        const authDomain = firebase.auth().app.options.authDomain;
-        const projectName = authDomain.replace('.firebaseapp.com', '');
-        throw new Error(`Looks like your domain isn't valid for this project. Please check your Firebase Auth domain configuration. https://console.firebase.google.com/u/0/project/${projectName}/authentication/providers`);
-    }
-    throw new Error(error);
+function handleAuthError(error, onError) {
+  if (error.code === "auth/unauthorized-domain") {
+      const authDomain = firebase.auth().app.options.authDomain;
+      const projectName = authDomain.replace('.firebaseapp.com', '');
+      onError(new Error(`Looks like your domain isn't valid for this project. Please check your Firebase Auth domain configuration. https://console.firebase.google.com/u/0/project/${projectName}/authentication/providers`));
+  } else {
+    onError(error)
+  }
 }
 
-function googleLogin(callback) {
+function googleLogin(onError) {
   var provider = new firebase.auth.GoogleAuthProvider();
-  firebase.auth().signInWithPopup(provider).then(callback, handleAuthError);
+  firebase.auth().signInWithPopup(provider).then(() => {}, (error) => handleAuthError(error, onError));
 }
 
 export {

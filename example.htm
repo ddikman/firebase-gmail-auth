@@ -1,0 +1,42 @@
+<html>
+    <head>
+        <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" type="text/css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css" type="text/css">
+
+        <!-- Load all of firebase -->
+        <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-auth.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <script type="module">
+          import { initFirebaseAuth, googleLogin, logout } from './firebase-auth.js';
+          initFirebaseAuth({
+            apiKey: 'xxx',
+            authDomain: "xxx.firebaseapp.com",
+            projectId: 'xxx',
+            loggedIn: (user, token) => {
+              $('#loggedIn').show();
+              $('#loggedOut').hide();
+            },
+            loggedOut: () => {
+              $('#loggedIn').hide();
+              $('#loggedOut').show();
+            }
+          });
+
+          $('#login').click(() => googleLogin());
+          $('#logout').click(() => logout());
+        </script>
+    </head>
+    <body>
+        <div class="container">
+          <section id="loggedIn" style="display: none">
+            <button id="logout">Logout</button>
+          </section>
+          <section id="loggedOut" style="display: none">
+            <button id="login">Login</button>
+          </section>
+        </div>
+    </body>
+</html>

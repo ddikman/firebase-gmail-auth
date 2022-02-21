@@ -1,4 +1,4 @@
-# Firebase gmail auth
+# Firebase gmail auth
 
 This library is supposed to be a tiny helper to wrap firebase and being able to login with gmail in any tiny little html app to be able to use the JWT for API calls.
 

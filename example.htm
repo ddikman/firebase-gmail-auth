@@ -8,35 +8,90 @@
         <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
         <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-auth.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-        <script type="module">
-          import { initFirebaseAuth, googleLogin, logout } from './firebase-auth.js';
-          initFirebaseAuth({
-            apiKey: 'xxx',
-            authDomain: "xxx.firebaseapp.com",
-            projectId: 'xxx',
-            loggedIn: (user, token) => {
-              $('#loggedIn').show();
-              $('#loggedOut').hide();
-            },
-            loggedOut: () => {
-              $('#loggedIn').hide();
-              $('#loggedOut').show();
-            }
-          });
-
-          $('#login').click(() => googleLogin());
-          $('#logout').click(() => logout());
-        </script>
     </head>
     <body>
         <div class="container">
-          <section id="loggedIn" style="display: none">
+          <section id="no-config">
+            <h2>Set config</h2>
+            <div>
+              <textarea style="width: 100%; height: 120px;" id="config">{
+  "apiKey": "xxx",
+  "authDomain": "xxx.firebaseapp.com",
+  "projectId": "xxx"
+}</textarea>
+            </div>
+            <p style="display: none; color: red;" id="error"></p>
+            <button id="configure">Set configuration</button>
+          </section>
+          <section id="signed-in">
+            <h2>You are logged in</h2>
             <button id="logout">Logout</button>
           </section>
-          <section id="loggedOut" style="display: none">
+          <section id="signed-out">
+            <h2>You are signed out</h2>
             <button id="login">Login</button>
+            <button id="clear-settings">Clear settings</button>
           </section>
         </div>
+
+        <script type="module">
+          import { initFirebaseAuth, googleLogin, logout } from './firebase-auth.js';
+
+          function setView(showView) {
+            const views = [ '#signed-in', '#signed-out', '#no-config' ]
+            views.forEach(view => {
+              if (view === showView) {
+                $(view).show();
+              } else {
+                $(view).hide();
+              }
+            })
+          }
+
+          const initAuth = (settings) => {
+            try {
+              initFirebaseAuth({
+                ...settings,
+                loggedIn: (user, token) => {
+                  setView('#signed-in');
+                },
+                loggedOut: () => {
+                  setView('#signed-out');
+                }
+              });
+            } catch (err)  {
+              console.err(err);
+              $('#error').text(err.message).show();
+            }
+          }
+
+          // helper to support parsing of config from firebase console such as { apiKey: ".." }
+          const looseJsonParse = (jsonLikeString) => {
+           return Function('"use strict";return (' + jsonLikeString + ')')();
+          }
+
+          setView('#no-config');
+          try {
+            const settings = JSON.parse(localStorage.getItem('settings'))
+            if (settings && settings.projectId)
+              initAuth(settings);
+          } catch (err) {
+            console.log(err);
+          }
+
+          const configure = () => {
+            const settings = looseJsonParse($('#config').val());
+            localStorage.setItem('settings', JSON.stringify(settings));
+            initAuth(settings);
+          }
+
+          $('#login').click(() => googleLogin());
+          $('#logout').click(() => logout());
+          $('#configure').click(() => configure());
+          $('#clear-settings').click(() => {
+            localStorage.clear();
+            location.reload();
+          });
+        </script>
     </body>
 </html>

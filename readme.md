@@ -40,3 +40,9 @@ initFirebaseAuth({
 To then login or logout you use the two helper functions `googleLogin(onError)` and `logout`. If you wired up your UI to be rendered with the callbacks above, your UI will automatically update once either of these functions complete.
 
 In the off-chance that login fails, the `googleLogin` takes a callback to handle the error.
+
+## Example
+
+In [example.htm](example.htm) I have also provided a minimum example to run this. Just clone this repo, use a tiny http server such as [http-server](https://www.npmjs.com/package/http-server) and host it on localhost. Then input the settings from your own Firebase project and try it out.
+
+![screenshot](screenshot.png)
